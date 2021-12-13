@@ -117,7 +117,7 @@ type Param struct {
 }
 
 func printUsage() {
-	fmt.Println("goparam -package main -name User -params \"Age int, Id int, Type UserType\" \n")
+	fmt.Println("goparam -package main -name User -params \"Age int, Id int, Type UserType\" -get -set -ctor -builder\n")
 	fmt.Println("Options:")
 	fmt.Println("  -name    - Type/Struct name")
 	fmt.Println("  -params  - Parameter list, separated by comma: Name Type, Name2 Type2, ...")

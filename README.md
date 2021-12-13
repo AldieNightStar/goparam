@@ -9,7 +9,7 @@
 
 # Usage
 ```
-goparam -package main -name User -params "Age int, Id int, Type UserType" 
+goparam -package main -name User -params "Age int, Id int, Type UserType" -get -set -ctor -builder
 
 Options:
   -name    - Type/Struct name
@@ -18,6 +18,7 @@ Options:
   -get     - Generate getters
   -set     - Generate setters
   -ctor    - Generate constructor New...()
+  -builder - Adds builder feature to your struct
 ```
 * Sample
 ```
