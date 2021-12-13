@@ -5,6 +5,7 @@
 * Adds Getters and Setters
 * Adds Constructor
 * Easy to use
+* Adds builder (Killer feature)
 
 # Usage
 ```

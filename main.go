@@ -19,6 +19,7 @@ func main() {
 	_, getters := args["get"]
 	_, setters := args["set"]
 	_, ctor := args["ctor"]
+	_, builder := args["builder"]
 	if !namePresent || !paramsPresent || !packgPresent {
 		if !namePresent {
 			println("ERR: Name is absent!")
@@ -32,7 +33,9 @@ func main() {
 		printUsage()
 		return
 	}
-	src := GenerateStruct(name, packg, params, getters, setters, ctor)
+	sb := &strings.Builder{}
+	GenerateStruct(sb, name, packg, params, getters, setters, ctor, builder)
+	src := sb.String()
 	if len(src) > 0 {
 		f := goscriptable.CreateFile(name + "_goparam.go")
 		f.WriteString(src)
@@ -41,10 +44,7 @@ func main() {
 	fmt.Println("Done!")
 }
 
-func GenerateStruct(name string, packg string, params string, getters, setters, ctor bool) string {
-	sb := &strings.Builder{}
-	sb.Grow(32)
-
+func GenerateStruct(sb *strings.Builder, name string, packg string, params string, getters, setters, ctor, builder bool) {
 	fmt.Fprintf(sb, "package %s\n\n", packg)
 	fmt.Fprintf(sb, "type %s struct {\n", name)
 
@@ -82,8 +82,17 @@ func GenerateStruct(name string, packg string, params string, getters, setters, 
 			fmt.Fprintf(sb, "\tself.%s = val\n}\n\n", param.Name)
 		}
 	}
+	if builder {
+		GenerateBuilder(sb, name, paramsArr)
+	}
+}
 
-	return sb.String()
+func GenerateBuilder(sb *strings.Builder, typeName string, params []*Param) {
+	fmt.Fprintf(sb, "type %sBuilder struct {\n\tBVal *%s\n}\n\nfunc New%sBuilder() *%sBuilder {\n\treturn &%sBuilder{&%s{}}\n}\n\n", typeName, typeName, typeName, typeName, typeName, typeName)
+	for _, param := range params {
+		fmt.Fprintf(sb, "func (self *%sBuilder) %s(%s %s) *%sBuilder {\n\tself.BVal.%s = %s\n\treturn self\n}\n\n", typeName, param.Name, param.Name, param.Type, typeName, param.Name, param.Name)
+	}
+	fmt.Fprintf(sb, "func (self *%sBuilder) Build() *%s {\n\treturn self.BVal\n}\n\n", typeName, typeName)
 }
 
 func ParseParams(line string) []*Param {
@@ -116,4 +125,5 @@ func printUsage() {
 	fmt.Println("  -get     - Generate getters")
 	fmt.Println("  -set     - Generate setters")
 	fmt.Println("  -ctor    - Generate constructor New...()")
+	fmt.Println("  -builder - Adds builder feature to your struct")
 }

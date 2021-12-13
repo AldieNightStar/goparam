@@ -1,0 +1,16 @@
+type UserBuilder struct {
+    BVal User
+}
+
+func NewUserBuilder() *UserBuilder {
+    return &UserBuilder{&User{}}
+}
+
+func (self *UserBuilder)  SetAge(age int) {
+    self.BVal.age = age
+    return self
+}
+
+func (self *UserBuilder) Build() {
+    return self.BVal
+}
